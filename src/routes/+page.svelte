@@ -72,7 +72,7 @@
       }
     })
 
-    let label = 0;
+    let label = 1;
     
     data.forEach(marker => {
       if(markers[marker.id]) 
