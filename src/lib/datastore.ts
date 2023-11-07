@@ -14,6 +14,7 @@ export function db(){ return getFirestore(app()) }
 const dbName = 'locations'
 
 export type Data = {
+  id: string
   Location: {
     Lat: number,
     Long: number

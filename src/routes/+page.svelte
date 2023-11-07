@@ -14,7 +14,7 @@
   let map: google.maps.Map;
   let data: Data[] = [];
   let firestore:Firestore;
-  let markers:google.maps.Marker[];
+  let markers: {[id: string]: google.maps.Marker} = {};
 
   const initMap = () => {
     map = new google.maps.Map(  
@@ -43,7 +43,10 @@
     const unsub = subscribe(firestore, (querySnapshot) => {
       const dat:Data[] = []
       querySnapshot.forEach((doc:any) => {
-        dat.push(doc.data())
+        dat.push({
+          id: doc.id,
+          ...doc.data()
+        })
       });
       data = dat
     })
@@ -52,17 +55,30 @@
 
   $: {
     // console.log('data', data);
-    (markers||[]).forEach(marker => marker.setMap(null));
-    markers = data.map((v,i) => {
-      return new google.maps.Marker({
+    // (markers||[]).forEach(marker => marker.setMap(null));
+    let label = Object.keys(markers||{}).length;
+    
+    data.forEach(marker => {
+      if(markers[marker.id]) return;
+      else markers[marker.id] = new google.maps.Marker({
         position: {
-          lat: v.Location.Lat,
-          lng: v.Location.Long
+          lat: marker.Location.Lat,
+          lng: marker.Location.Long
         },
         map,
-        label: i+''
+        label: (label++) + ''
       })
     })
+
+    const markerIds = data.reduce((a,b) => {
+      a[b.id] = true
+      return a
+    },{} as {[id: string]: boolean})
+
+    Object.keys(markers).forEach(id => {
+      if(!markerIds[id]) delete markers[id]
+    })
+    
   }
 
 </script>
