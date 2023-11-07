@@ -11,7 +11,7 @@
   // Tangerang, Indonesia
   let lat = -6.178306
   let lng = 106.631889
-  let unsub:any;
+  let unsub:() => void;
   let map: google.maps.Map;
   let data: Data[] = [];
   let markers: {[id: string]: google.maps.Marker} = {};
