@@ -72,10 +72,11 @@
       }
     })
 
-    let label = Object.keys(markers||{}).length + 1;
+    let label = 0;
     
     data.forEach(marker => {
-      if(markers[marker.id]) return;
+      if(markers[marker.id]) 
+        markers[marker.id].setLabel((label++) + '')
       else markers[marker.id] = new google.maps.Marker({
         position: {
           lat: marker.Location.Lat,
