@@ -1,8 +1,9 @@
 <script lang="ts">
   import { map as mapLoaded } from '$lib/stores/map-loaded'
-  import { db, addLatLng, subscribe, type Data } from '$lib/datastore'
-	import type { Firestore } from 'firebase/firestore';
+  import { addLatLng, subscribe, type Data } from '$lib/datastore'
 	import { onMount } from 'svelte';
+  import { firestore } from '$lib/stores/firestore'
+	import type { Firestore } from 'firebase/firestore';
 
   let mapElm:HTMLDivElement;
   let zoom = 11;
@@ -10,10 +11,9 @@
   // Tangerang, Indonesia
   let lat = -6.178306
   let lng = 106.631889
-
+  let unsub:any;
   let map: google.maps.Map;
   let data: Data[] = [];
-  let firestore:Firestore;
   let markers: {[id: string]: google.maps.Marker} = {};
 
   const initMap = () => {
@@ -28,7 +28,7 @@
       await addLatLng({
         lat: mapsMouseEvent.latLng.lat(),
         lng: mapsMouseEvent.latLng.lng(),
-        db: firestore
+        db: $firestore as Firestore
       })
     })
   }
@@ -38,9 +38,8 @@
     initMap()
   }
 
-  onMount(() => {
-    firestore = db()
-    const unsub = subscribe(firestore, (querySnapshot) => {
+  $: if($firestore){
+    unsub = subscribe($firestore, (querySnapshot) => {
       const dat:Data[] = []
       querySnapshot.forEach((doc:any) => {
         dat.push({
@@ -50,13 +49,16 @@
       });
       data = dat
     })
-    return () => unsub()
+  }
+
+  onMount(() => {
+    return () => unsub && unsub()
   })
 
   $: {
     // console.log('data', data);
     // (markers||[]).forEach(marker => marker.setMap(null));
-    
+
     // removal first 
     const markerIds = data.reduce((a,b) => {
       a[b.id] = true
