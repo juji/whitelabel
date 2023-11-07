@@ -72,7 +72,7 @@
       }
     })
 
-    let label = Object.keys(markers||{}).length;
+    let label = Object.keys(markers||{}).length + 1;
     
     data.forEach(marker => {
       if(markers[marker.id]) return;
