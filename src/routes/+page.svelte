@@ -76,7 +76,10 @@
     },{} as {[id: string]: boolean})
 
     Object.keys(markers).forEach(id => {
-      if(!markerIds[id]) delete markers[id]
+      if(!markerIds[id]) {
+        markers[id].setMap(null)
+        delete markers[id]
+      }
     })
     
   }
