@@ -56,6 +56,20 @@
   $: {
     // console.log('data', data);
     // (markers||[]).forEach(marker => marker.setMap(null));
+    
+    // removal first 
+    const markerIds = data.reduce((a,b) => {
+      a[b.id] = true
+      return a
+    },{} as {[id: string]: boolean})
+
+    Object.keys(markers).forEach(id => {
+      if(!markerIds[id]) {
+        markers[id].setMap(null)
+        delete markers[id]
+      }
+    })
+
     let label = Object.keys(markers||{}).length;
     
     data.forEach(marker => {
@@ -70,17 +84,6 @@
       })
     })
 
-    const markerIds = data.reduce((a,b) => {
-      a[b.id] = true
-      return a
-    },{} as {[id: string]: boolean})
-
-    Object.keys(markers).forEach(id => {
-      if(!markerIds[id]) {
-        markers[id].setMap(null)
-        delete markers[id]
-      }
-    })
     
   }
 
